@@ -45,36 +45,38 @@ class AlarmReceiver : BroadcastReceiver() {
                 t = JSONObject(reader.readText())
             }
 
-            val promocaoId = t.getJSONArray("promocoes").getJSONObject(0).getInt("id")
-            val premio1Id = t.getJSONArray("promocoes").getJSONObject(0).getJSONArray("premios").getJSONObject(0).getInt("id")
-            val premio2Id = t.getJSONArray("promocoes").getJSONObject(0).getJSONArray("premios").getJSONObject(1).getInt("id")
-            val premio1Titulo = t.getJSONArray("promocoes").getJSONObject(0).getJSONArray("premios").getJSONObject(0).getString("titulo")
-            val enrollURL = URL("https://server.mobradio.com.br/brokers/promoEnroll")
+			if (t.getJSONArray("promocoes").length > 0)
+			{
+				val promocaoId = t.getJSONArray("promocoes").getJSONObject(0).getInt("id")
+				val premio1Id = t.getJSONArray("promocoes").getJSONObject(0).getJSONArray("premios").getJSONObject(0).getInt("id")
+				val premio2Id = t.getJSONArray("promocoes").getJSONObject(0).getJSONArray("premios").getJSONObject(1).getInt("id")
+				val premio1Titulo = t.getJSONArray("promocoes").getJSONObject(0).getJSONArray("premios").getJSONObject(0).getString("titulo")
+				val enrollURL = URL("https://server.mobradio.com.br/brokers/promoEnroll")
 
-            val premioId: Int = if (premio1Titulo.contains("pizza", true) ||
-                premio1Titulo.contains("sushi", true) ||
-                premio1Titulo.contains("mexican", true)){
-                premio1Id
-            } else{
-                premio2Id
-            }
+				val premioId: Int = if (premio1Titulo.contains("pizza", true) ||
+					premio1Titulo.contains("sushi", true) ||
+					premio1Titulo.contains("mexican", true)){
+					premio1Id
+				} else{
+					premio2Id
+				}
 
-            with(enrollURL.openConnection() as HttpURLConnection) {
-                requestMethod = "POST"
-                setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+				with(enrollURL.openConnection() as HttpURLConnection) {
+					requestMethod = "POST"
+					setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
-                val postData: ByteArray =
-                    "app_key=4ec46121760ecd5bcc885569bed9042c1b47&gift_promo_id=$promocaoId&gift_id=$premioId&listener_id=122304".toByteArray()
-                val outputStream = DataOutputStream(outputStream)
-                outputStream.write(postData)
-                outputStream.flush()
+					val postData: ByteArray =
+						"app_key=4ec46121760ecd5bcc885569bed9042c1b47&gift_promo_id=$promocaoId&gift_id=$premioId&listener_id=122304".toByteArray()
+					val outputStream = DataOutputStream(outputStream)
+					outputStream.write(postData)
+					outputStream.flush()
 
-                val inputStream = DataInputStream(inputStream)
-                val reader = BufferedReader(InputStreamReader(inputStream))
+					val inputStream = DataInputStream(inputStream)
+					val reader = BufferedReader(InputStreamReader(inputStream))
 
-                Toast.makeText(context, reader.readText(), Toast.LENGTH_SHORT).show()
-            }
-            //Toast.makeText(context, responseMessage, Toast.LENGTH_LONG).show()
+					Toast.makeText(context, reader.readText(), Toast.LENGTH_SHORT).show()
+				}
+			}
         }.start()
 
         var calendar = Calendar.getInstance()
