@@ -10,7 +10,6 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import org.json.JSONObject
@@ -28,16 +27,7 @@ var pendingIntent: PendingIntent? = null
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-
         MainActivity.callApi(context)
-
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = System.currentTimeMillis()
-
-        calendar.set(Calendar.MINUTE, 5)
-        calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1)
-
-        alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
 }
 
@@ -110,11 +100,14 @@ class MainActivity : AppCompatActivity() {
                         outputStream.flush()
 
                         val inputStream = DataInputStream(inputStream)
-                        val reader = BufferedReader(InputStreamReader(inputStream))
+                        val text = BufferedReader(InputStreamReader(inputStream)).readLines()
 
                         var builder = NotificationCompat.Builder(context, "CHANNEL_ID")
-                            .setContentText(promocoes.getJSONObject(0).toString())
+                            .setContentText(text.joinToString())
                             .setSmallIcon(R.drawable.ic_launcher_background)
+                            .setStyle(NotificationCompat.BigTextStyle().bigText(
+                                premios.toString()
+                            ))
 
                         with(NotificationManagerCompat.from(context)){
                             notify(1, builder.build())
@@ -122,6 +115,14 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }.start()
+
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = System.currentTimeMillis()
+
+            calendar.set(Calendar.MINUTE, 5)
+            calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1)
+
+            alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
         }
     }
 
@@ -131,20 +132,6 @@ class MainActivity : AppCompatActivity() {
 
         createNotificationChannel()
         MainActivity.callApi(this)
-
-        /*
-        alarmManager = getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-
-        val alarmIntent = Intent(this, AlarmReceiver::class.java)
-        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0)
-
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.MINUTE, 5)
-        calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1)
-        
-        alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
-        */
     }
 
     private fun createNotificationChannel(){
