@@ -22,18 +22,18 @@ import java.net.URL
 import java.util.*
 
 var alarmManager: AlarmManager? = null
-var pendingIntent: PendingIntent? = null
+lateinit var pendingIntent: PendingIntent
 
 class AlarmReceiver : BroadcastReceiver() {
 
-    override fun onReceive(context: Context, intent: Intent) {
-        MainActivity.callApi(context)
-    }
+    override fun onReceive(context: Context, intent: Intent) = MainActivity.callApi(context)
 }
 
 class MainActivity : AppCompatActivity() {
 
     companion object{
+
+        var id: Int = 0
 
         fun callApi(context: Context){
             Thread {
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
                         val inputStream = DataInputStream(inputStream)
                         val text = BufferedReader(InputStreamReader(inputStream)).readLines()
 
-                        var builder = NotificationCompat.Builder(context, "CHANNEL_ID")
+                        val builder = NotificationCompat.Builder(context, "CHANNEL_ID")
                             .setContentText(text.joinToString())
                             .setSmallIcon(R.drawable.ic_launcher_background)
                             .setStyle(NotificationCompat.BigTextStyle().bigText(
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                             ))
 
                         with(NotificationManagerCompat.from(context)){
-                            notify(1, builder.build())
+                            notify(id++, builder.build())
                         }
                     }
                 }
@@ -131,6 +131,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         createNotificationChannel()
+
+        var alarmIntent = Intent(this, AlarmReceiver::class.java)
+        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0)
+
         MainActivity.callApi(this)
     }
 
