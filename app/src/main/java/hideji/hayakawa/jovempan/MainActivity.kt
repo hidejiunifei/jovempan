@@ -1,13 +1,18 @@
 package hideji.hayakawa.jovempan
 
 import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataInputStream
@@ -24,6 +29,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = System.currentTimeMillis()
+
         Thread {
             val promosURL = URL("https://server.mobradio.com.br/brokers/getGiftsPromos")
             val t : JSONObject
@@ -32,7 +40,17 @@ class AlarmReceiver : BroadcastReceiver() {
                 requestMethod = "POST"
 
                 val postData: ByteArray =
-                    "key=4ec46121760ecd5bcc885569bed9042c1b47&date=2021-07-05T08:01".toByteArray()
+                    StringBuffer("key=4ec46121760ecd5bcc885569bed9042c1b47&date=")
+                        .append(calendar.get(Calendar.YEAR))
+                        .append("-")
+                        .append(calendar.get(Calendar.MONTH))
+                        .append("-")
+                        .append(calendar.get(Calendar.DAY_OF_MONTH))
+                        .append("T")
+                        .append(calendar.get(Calendar.HOUR_OF_DAY))
+                        .append("T")
+                        .append(calendar.get(Calendar.MINUTE)).toString()
+                .toByteArray()
                 val outputStream = DataOutputStream(outputStream)
                 outputStream.write(postData)
                 outputStream.flush()
@@ -74,14 +92,18 @@ class AlarmReceiver : BroadcastReceiver() {
 					val inputStream = DataInputStream(inputStream)
 					val reader = BufferedReader(InputStreamReader(inputStream))
 
-					Toast.makeText(context, reader.readText(), Toast.LENGTH_SHORT).show()
+                    var builder = NotificationCompat.Builder(context, "CHANNEL_ID")
+                        .setContentText(promocoes.getJSONObject(0).toString())
+                        .setSmallIcon(R.drawable.ic_launcher_background)
+
+                    with(NotificationManagerCompat.from(context)){
+                        notify(1, builder.build())
+                    }
 				}
 			}
         }.start()
 
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.MINUTE, 1)
+        calendar.set(Calendar.MINUTE, 5)
         calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1)
 
         alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
@@ -94,6 +116,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        createNotificationChannel()
+
         alarmManager = getSystemService(Context.ALARM_SERVICE) as? AlarmManager
 
         val alarmIntent = Intent(this, AlarmReceiver::class.java)
@@ -101,9 +125,16 @@ class MainActivity : AppCompatActivity() {
 
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.MINUTE, 1)
+        calendar.set(Calendar.MINUTE, 5)
         calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1)
         
         alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+    }
+
+    private fun createNotificationChannel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel("CHANNEL_ID", "CHANNEL_NAME", NotificationManager.IMPORTANCE_DEFAULT)
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
+        }
     }
 }
