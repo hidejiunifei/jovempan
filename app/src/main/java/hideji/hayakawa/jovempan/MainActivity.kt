@@ -44,13 +44,15 @@ class AlarmReceiver : BroadcastReceiver() {
 
                 t = JSONObject(reader.readText())
             }
+			
+			val promocoes = t.getJSONArray("promocoes")
 
-			if (t.getJSONArray("promocoes").length > 0)
+			if (promocoes.length() > 0)
 			{
-				val promocaoId = t.getJSONArray("promocoes").getJSONObject(0).getInt("id")
-				val premio1Id = t.getJSONArray("promocoes").getJSONObject(0).getJSONArray("premios").getJSONObject(0).getInt("id")
-				val premio2Id = t.getJSONArray("promocoes").getJSONObject(0).getJSONArray("premios").getJSONObject(1).getInt("id")
-				val premio1Titulo = t.getJSONArray("promocoes").getJSONObject(0).getJSONArray("premios").getJSONObject(0).getString("titulo")
+				val promocaoId = promocoes.getJSONObject(0).getInt("id")
+				val premio1Id = promocoes.getJSONObject(0).getJSONArray("premios").getJSONObject(0).getInt("id")
+				val premio2Id = promocoes.getJSONObject(0).getJSONArray("premios").getJSONObject(1).getInt("id")
+				val premio1Titulo = promocoes.getJSONObject(0).getJSONArray("premios").getJSONObject(0).getString("titulo")
 				val enrollURL = URL("https://server.mobradio.com.br/brokers/promoEnroll")
 
 				val premioId: Int = if (premio1Titulo.contains("pizza", true) ||
