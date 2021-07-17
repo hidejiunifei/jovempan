@@ -79,10 +79,10 @@ class AlarmReceiver : BroadcastReceiver() {
 			}
         }.start()
 
-        var calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance()
         calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.MINUTE, 1);
-        calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1);
+        calendar.set(Calendar.MINUTE, 1)
+        calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1)
 
         alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
@@ -99,10 +99,10 @@ class MainActivity : AppCompatActivity() {
         val alarmIntent = Intent(this, AlarmReceiver::class.java)
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0)
 
-        var calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance()
         calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.MINUTE, 1);
-        calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1);
+        calendar.set(Calendar.MINUTE, 1)
+        calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1)
         
         alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
