@@ -132,6 +132,7 @@ class MainActivity : AppCompatActivity() {
 
         createNotificationChannel()
 
+        alarmManager = getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         var alarmIntent = Intent(this, AlarmReceiver::class.java)
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0)
 
