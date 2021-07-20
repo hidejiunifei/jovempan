@@ -76,17 +76,23 @@ class MainActivity : AppCompatActivity() {
                     val promocaoId = promocoes.getJSONObject(0).getInt("id")
                     val premio1Id = premios.getJSONObject(0).getInt("id")
                     val premio2Id = if (premios.length() > 1) premios.getJSONObject(1).getInt("id") else 0
+                    var premioId: Int
                     val premio1Titulo = premios.getJSONObject(0).getString("titulo")
+                    val premio2Titulo = if (premios.length() > 1) premios.getJSONObject(1).getString("titulo") else ""
+                    var premioTitulo: String
                     val enrollURL = URL("https://server.mobradio.com.br/brokers/promoEnroll")
 
-                    val premioId: Int = if (
-                        premios.length() < 2 ||
+                    if (premios.length() < 2 ||
                         premio1Titulo.contains("pizza", true) ||
                         premio1Titulo.contains("sushi", true) ||
+						premio1Titulo.contains("ingresso", true) ||
+						premio1Titulo.contains("lasanha" ,true) ||
                         premio1Titulo.contains("mexican", true)){
-                        premio1Id
+                        premioId = premio1Id
+                        premioTitulo = premio1Titulo
                     } else{
-                        premio2Id
+                        premioId = premio2Id
+                        premioTitulo = premio2Titulo
                     }
 
                     with(enrollURL.openConnection() as HttpURLConnection) {
@@ -103,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                         val text = BufferedReader(InputStreamReader(inputStream)).readLines()
 
                         val builder = NotificationCompat.Builder(context, "CHANNEL_ID")
-                            .setContentText(text.joinToString())
+                            .setContentText(StringBuilder(premioTitulo).append(text))
                             .setSmallIcon(R.drawable.ic_launcher_background)
                             .setStyle(NotificationCompat.BigTextStyle().bigText(
                                 premios.toString()
