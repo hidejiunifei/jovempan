@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         fun callApi(context: Context){
             Thread {
                 val calendar = Calendar.getInstance()
-                calendar.timeInMillis = System.currentTimeMillis()
                 val promosURL = URL("https://server.mobradio.com.br/brokers/getGiftsPromos")
                 val t : JSONObject
 
@@ -57,9 +56,13 @@ class MainActivity : AppCompatActivity() {
                             .append(":")
                             .append(calendar.get(Calendar.MINUTE)).toString()
                             .toByteArray()
+
                     val outputStream = DataOutputStream(outputStream)
                     outputStream.write(postData)
                     outputStream.flush()
+
+                    calendar.set(Calendar.MINUTE, 5)
+                    calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) + 1)
 
                     val inputStream = DataInputStream(inputStream)
                     val reader = BufferedReader(InputStreamReader(inputStream))
@@ -71,6 +74,9 @@ class MainActivity : AppCompatActivity() {
 
                 if (promocoes.length() > 0)
                 {
+                    val data_final = promocoes.getJSONObject(0).getString("data_final")
+
+                    calendar.set(Calendar.HOUR_OF_DAY, data_final.split(' ')[1].split(':')[0].toInt())
                     val premios = promocoes.getJSONObject(0).getJSONArray("premios")
 
                     val promocaoId = promocoes.getJSONObject(0).getInt("id")
@@ -116,15 +122,16 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
+                val builder = NotificationCompat.Builder(context, "CHANNEL_ID")
+                    .setContentText(StringBuilder("next run: ").append(calendar.get(Calendar.HOUR_OF_DAY)))
+                    .setSmallIcon(R.drawable.ic_launcher_background)
+
+                with(NotificationManagerCompat.from(context)){
+                    notify(id++, builder.build())
+                }
+
+                alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
             }.start()
-
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = System.currentTimeMillis()
-
-            calendar.set(Calendar.MINUTE, 5)
-            calendar.set(Calendar.HOUR, calendar.get(Calendar.HOUR) + 1)
-
-            alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
         }
     }
 
