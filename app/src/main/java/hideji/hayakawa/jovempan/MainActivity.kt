@@ -33,8 +33,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
 
-        var id: Int = 0
-
         fun callApi(context: Context){
             Thread {
                 val calendar = Calendar.getInstance()
@@ -118,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                             ))
 
                         with(NotificationManagerCompat.from(context)){
-                            notify(id++, builder.build())
+                            notify(Calendar.getInstance().timeInMillis.toInt(), builder.build())
                         }
                     }
                 }
@@ -127,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                     .setSmallIcon(R.drawable.ic_launcher_background)
 
                 with(NotificationManagerCompat.from(context)){
-                    notify(id++, builder.build())
+                    notify(Calendar.getInstance().timeInMillis.toInt(), builder.build())
                 }
 
                 alarmManager?.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
