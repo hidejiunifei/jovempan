@@ -80,19 +80,27 @@ class MainActivity : AppCompatActivity() {
                     val promocaoId = promocoes.getJSONObject(0).getInt("id")
                     val premio1Id = premios.getJSONObject(0).getInt("id")
                     val premio2Id = if (premios.length() > 1) premios.getJSONObject(1).getInt("id") else 0
-                    var premioId: Int
+                    var premioId: Int = 0
                     val premio1Titulo = premios.getJSONObject(0).getString("titulo")
+                    val premio2Titulo = premios.getJSONObject(1).getString("titulo")
                     val enrollURL = URL("https://server.mobradio.com.br/brokers/promoEnroll")
+                    val opcoes = arrayOf("pizza", "mexican", "sushi", "lasanha", "ingresso")
 
-                    if (premios.length() < 2 ||
-                        premio1Titulo.contains("pizza", true) ||
-                        premio1Titulo.contains("sushi", true) ||
-						premio1Titulo.contains("ingresso", true) ||
-						premio1Titulo.contains("lasanha" ,true) ||
-                        premio1Titulo.contains("mexican", true)){
+                    if (premios.length() < 2){
                         premioId = premio1Id
                     } else{
-                        premioId = premio2Id
+                        for (opcao in opcoes) {
+                            if (premio1Titulo.contains(opcao)){
+                                premioId = premio1Id
+                                break;
+                            }
+                            else if (premio2Titulo.contains(opcao)) {
+                                premioId = premio2Id
+                                break;
+                            }
+                        }
+                        if (premioId == 0)
+                            premioId = premio1Id
                     }
 
                     with(enrollURL.openConnection() as HttpURLConnection) {
