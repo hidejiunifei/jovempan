@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                     val promocaoId = promocoes.getJSONObject(0).getInt("id")
                     val premio1Id = premios.getJSONObject(0).getInt("id")
                     val premio2Id = if (premios.length() > 1) premios.getJSONObject(1).getInt("id") else 0
-                    var premioId: Int = 0
+                    var premioId = 0
                     val premio1Titulo = premios.getJSONObject(0).getString("titulo")
                     val premio2Titulo = premios.getJSONObject(1).getString("titulo")
                     val enrollURL = URL("https://server.mobradio.com.br/brokers/promoEnroll")
@@ -92,11 +92,11 @@ class MainActivity : AppCompatActivity() {
                         for (opcao in opcoes) {
                             if (premio1Titulo.contains(opcao)){
                                 premioId = premio1Id
-                                break;
+                                break
                             }
                             else if (premio2Titulo.contains(opcao)) {
                                 premioId = premio2Id
-                                break;
+                                break
                             }
                         }
                         if (premioId == 0)
@@ -148,16 +148,14 @@ class MainActivity : AppCompatActivity() {
         createNotificationChannel()
 
         alarmManager = getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-        var alarmIntent = Intent(this, AlarmReceiver::class.java)
+        val alarmIntent = Intent(this, AlarmReceiver::class.java)
         pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0)
 
-        MainActivity.callApi(this)
+        callApi(this)
     }
 
     private fun createNotificationChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channel = NotificationChannel("CHANNEL_ID", "CHANNEL_NAME", NotificationManager.IMPORTANCE_DEFAULT)
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel("CHANNEL_ID", "CHANNEL_NAME", NotificationManager.IMPORTANCE_DEFAULT)
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
     }
 }
