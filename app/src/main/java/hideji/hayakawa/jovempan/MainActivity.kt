@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                     val premio2Id = if (premios.length() > 1) premios.getJSONObject(1).getInt("id") else 0
                     var premioId = 0
                     val premio1Titulo = premios.getJSONObject(0).getString("titulo")
-                    val premio2Titulo = premios.getJSONObject(1).getString("titulo")
+                    val premio2Titulo = if (premios.length() > 1) premios.getJSONObject(1).getString("titulo") else ""
                     val enrollURL = URL("https://server.mobradio.com.br/brokers/promoEnroll")
                     val opcoes = arrayOf("pizza", "mexican", "sushi", "lasanha", "ingresso")
 
