@@ -7,11 +7,13 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.preference.PreferenceManager
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataInputStream
@@ -32,6 +34,8 @@ class AlarmReceiver : BroadcastReceiver() {
 class MainActivity : AppCompatActivity() {
 
     companion object{
+
+        lateinit var sharedPref: SharedPreferences
 
         fun callApi(context: Context){
             Thread {
@@ -84,12 +88,11 @@ class MainActivity : AppCompatActivity() {
                     val premio1Titulo = premios.getJSONObject(0).getString("titulo")
                     val premio2Titulo = if (premios.length() > 1) premios.getJSONObject(1).getString("titulo") else ""
                     val enrollURL = URL("https://server.mobradio.com.br/brokers/promoEnroll")
-                    val opcoes = arrayOf("pizza", "mexican", "sushi", "lasanha", "ingresso")
 
                     if (premios.length() < 2){
                         premioId = premio1Id
                     } else{
-                        for (opcao in opcoes) {
+                        for (opcao in sharedPref.getString("csvPrioridadePremios","")!!.split(',')) {
                             if (premio1Titulo.contains(opcao)){
                                 premioId = premio1Id
                                 break
@@ -144,8 +147,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         createNotificationChannel()
+
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
         alarmManager = getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val alarmIntent = Intent(this, AlarmReceiver::class.java)
@@ -157,5 +163,11 @@ class MainActivity : AppCompatActivity() {
     private fun createNotificationChannel(){
         val channel = NotificationChannel("CHANNEL_ID", "CHANNEL_NAME", NotificationManager.IMPORTANCE_DEFAULT)
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
+    }
+
+    fun openSettingsActivity(item: MenuItem?): Boolean {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
+        return true
     }
 }

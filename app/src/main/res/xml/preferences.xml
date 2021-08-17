@@ -1,0 +1,5 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/premios">
+        <EditTextPreference android:key="csvPrioridadePremios" android:title="csv de prioridade de prêmios" android:defaultValue="pizza,mexican,sushi,lasanha,ingresso" />
+    </PreferenceCategory>
+</PreferenceScreen>

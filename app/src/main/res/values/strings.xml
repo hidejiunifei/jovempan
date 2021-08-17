@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Jovem pan</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="premios">Prêmios</string>
+
 </resources>
