@@ -93,11 +93,11 @@ class MainActivity : AppCompatActivity() {
                         premioId = premio1Id
                     } else{
                         for (opcao in sharedPref.getString("csvPrioridadePremios","")!!.split(',')) {
-                            if (premio1Titulo.lowercaseChar().contains(opcao)){
+                            if (premio1Titulo.lowercase().contains(opcao)){
                                 premioId = premio1Id
                                 break
                             }
-                            else if (premio2Titulo.lowercaseChar().contains(opcao)) {
+                            else if (premio2Titulo.lowercase().contains(opcao)) {
                                 premioId = premio2Id
                                 break
                             }
