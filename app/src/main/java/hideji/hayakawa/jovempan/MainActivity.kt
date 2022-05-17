@@ -1,5 +1,6 @@
 package hideji.hayakawa.jovempan
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -144,10 +145,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
 
         createNotificationChannel()
 
@@ -155,7 +157,7 @@ class MainActivity : AppCompatActivity() {
 
         alarmManager = getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val alarmIntent = Intent(this, AlarmReceiver::class.java)
-        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0)
+        pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_IMMUTABLE )
 
         callApi(this)
     }
