@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                             val text = BufferedReader(InputStreamReader(inputStream)).readLines()
 
                             val builder = NotificationCompat.Builder(context, "CHANNEL_ID")
-                                .setContentText(StringBuilder("$premioId - $id - $text"))
+                                .setContentText("$premioId - $id - $text")
                                 .setSmallIcon(R.drawable.ic_launcher_background)
                                 .setStyle(NotificationCompat.BigTextStyle().bigText(
                                     premios.toString()
