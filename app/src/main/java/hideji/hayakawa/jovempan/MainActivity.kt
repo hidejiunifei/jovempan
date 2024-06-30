@@ -107,28 +107,30 @@ class MainActivity : AppCompatActivity() {
                             premioId = premio1Id
                     }
 
-                    with(enrollURL.openConnection() as HttpURLConnection) {
-                        requestMethod = "POST"
-                        setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+                    for (id in sharedPref.getString("csvIds","")!!.split(',')) {
+                        with(enrollURL.openConnection() as HttpURLConnection) {
+                            requestMethod = "POST"
+                            setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
 
-                        val postData: ByteArray =
-                            "app_key=4ec46121760ecd5bcc885569bed9042c1b47&gift_promo_id=$promocaoId&gift_id=$premioId&listener_id=122304".toByteArray()
-                        val outputStream = DataOutputStream(outputStream)
-                        outputStream.write(postData)
-                        outputStream.flush()
+                            val postData: ByteArray =
+                                "app_key=4ec46121760ecd5bcc885569bed9042c1b47&gift_promo_id=$promocaoId&gift_id=$premioId&listener_id=$id".toByteArray()
+                            val outputStream = DataOutputStream(outputStream)
+                            outputStream.write(postData)
+                            outputStream.flush()
 
-                        val inputStream = DataInputStream(inputStream)
-                        val text = BufferedReader(InputStreamReader(inputStream)).readLines()
+                            val inputStream = DataInputStream(inputStream)
+                            val text = BufferedReader(InputStreamReader(inputStream)).readLines()
 
-                        val builder = NotificationCompat.Builder(context, "CHANNEL_ID")
-                            .setContentText(StringBuilder(premioId.toString()).append(text))
-                            .setSmallIcon(R.drawable.ic_launcher_background)
-                            .setStyle(NotificationCompat.BigTextStyle().bigText(
-                                premios.toString()
-                            ))
+                            val builder = NotificationCompat.Builder(context, "CHANNEL_ID")
+                                .setContentText(StringBuilder("$premioId - $id - $text"))
+                                .setSmallIcon(R.drawable.ic_launcher_background)
+                                .setStyle(NotificationCompat.BigTextStyle().bigText(
+                                    premios.toString()
+                                ))
 
-                        with(NotificationManagerCompat.from(context)){
-                            notify(Calendar.getInstance().timeInMillis.toInt(), builder.build())
+                            with(NotificationManagerCompat.from(context)){
+                                notify(Calendar.getInstance().timeInMillis.toInt(), builder.build())
+                            }
                         }
                     }
                 }
